@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,6 +31,21 @@ public class PlantController {
         List<Plant> plants = plantService.getAllPlants();
         return new ResponseEntity<>(plants, HttpStatus.OK);
     }
+
+    @PostMapping("/{id}/buy")
+    public ResponseEntity<String> buyPlant(@PathVariable("id") Long id, @RequestParam BigDecimal quantity) {
+        if (quantity.compareTo(BigDecimal.ZERO) > 0) {
+            try {
+                plantService.buyPlant(id, quantity);
+                return new ResponseEntity<>("Purchase successful", HttpStatus.OK);
+            } catch (IllegalArgumentException e) {
+                return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            }
+        }
+        else return new ResponseEntity<>("Purchase not successful", HttpStatus.BAD_REQUEST);
+    }
+
+
 
     /**
      * Get a single plant by ID
